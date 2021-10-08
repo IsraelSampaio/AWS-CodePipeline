@@ -5,21 +5,21 @@ phases:
     commands:
       - echo Logging in to Amazon ECR
       - aws --version
-      - 
-      - REPOSITORY_URI=
+      - aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 358075310600.dkr.ecr.sa-east-1.amazonaws.com
+      - REPOSITORY_URI=358075310600.dkr.ecr.sa-east-1.amazonaws.com/pipeline
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
     commands:
       - echo Build started on 'date'
       - echo Building the Docker image...
-      - docker build -t pipeline
-      - docker tag 
+      - docker build -t pipeline .
+      - docker tag pipeline:latest 358075310600.dkr.ecr.sa-east-1.amazonaws.com/pipeline:latest
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      - docker push
+      - docker push 358075310600.dkr.ecr.sa-east-1.amazonaws.com/pipeline:latest
       - printf '[{"name": "app", "imageUri": "%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:
