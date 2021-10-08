@@ -14,13 +14,13 @@ phases:
       - echo Build started on 'date'
       - echo Building the Docker image...
       - docker build -t pipeline .
-      - docker tag pipeline:latest 358075310600.dkr.ecr.sa-east-1.amazonaws.com/pipeline:latest
+      - docker tag pipeline:latest $REPOSITORY_URI:latest
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      - docker push 358075310600.dkr.ecr.sa-east-1.amazonaws.com/pipeline:latest
-      # - printf '[{"name": "app", "imageUri": "%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - docker push $REPOSITORY_URI:latest
+      - printf '[{"name": "app", "imageUri": "%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:
   files:
